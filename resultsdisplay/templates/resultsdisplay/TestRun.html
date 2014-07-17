@@ -1,0 +1,13 @@
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+Test Runs:
+{% if testrun_list %}
+    <ul>
+    {% for testrun in testrun_list %}
+        <li><a href="{% url 'resultsdisplay:TestGroup' testrun.project_id testrun.run_num %}">{{ testrun.run_num }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No test runs are available.</p>
+{% endif %}
+</ul>

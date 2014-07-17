@@ -1,0 +1,14 @@
+<hl>{{ project.name }}</hl>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+Test Groups:
+{% if testgroup_list %}
+    <ul>
+    {% for testgroup in testgroup_list %}
+        <li><a href="{% url 'resultsdisplay:TestCase' project_id run_num testgroup.type_num %}">{{ testgroup.test_type }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No test groups are available.</p>
+{% endif %}
+</ul>

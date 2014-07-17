@@ -1,0 +1,18 @@
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+Test Details:
+{% if testresult %}
+    <ul>
+        <li> Name: {{ testresult.name }} </li>
+        <li> Status: {{ testresult.result }} </li>
+        <li> Time elapsed: {{ testresult.run_time }}</li>
+        <li> Datestamp: {{ testresult.datestamp }}</li>
+        <li> XML Output: <a href="{{ testresult.xml_path }}">{{ testresult.xml_path }}</a></li>
+
+        <p>
+ 
+    </ul>
+{% else %}
+    <p>No test cases are available.</p>
+{% endif %}
+</ul>

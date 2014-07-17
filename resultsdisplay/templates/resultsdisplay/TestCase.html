@@ -1,0 +1,14 @@
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+Test Cases:
+{% if testcase_list %}
+    <ul>
+    {% for testcase in testcase_list %}
+        <li> <a href="{% url 'resultsdisplay:Details' testcase.project_id testcase.run_num group_id testcase.test_result_id %}"> 
+        {{ testcase.result }} -- {{testcase.name}}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No test cases are available.</p>
+{% endif %}
+</ul>
