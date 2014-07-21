@@ -1,18 +1,86 @@
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% extends "base.html" %}
 
-Test Details:
+{% block includes %}
+<script type="text/javascript" src="{{ STATIC_URL }}transition.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}collapse.js"></script>
+{% endblock includes %}
+
+{% block breadcrumb %}
+<li><a href = "{% url 'resultsdisplay:index' %}"> {{project_name}}</a> </li>
+<li><a href = "{% url 'resultsdisplay:TestRun' project_id %}"> Run {{run_num}}</a></li>
+<li><a href = "{% url 'resultsdisplay:TestGroup' project_id run_num %}"> {{type_name}} Tests </a></li>
+<li><a href = "{% url 'resultsdisplay:TestCase' project_id run_num group_id %}"> {{testresult.name}} </a></li>
+<li class="active"> Test Details </li>
+{% endblock breadcrumb %}
+
+{% block content %}
 {% if testresult %}
-    <ul>
-        <li> Name: {{ testresult.name }} </li>
-        <li> Status: {{ testresult.result }} </li>
-        <li> Time elapsed: {{ testresult.run_time }}</li>
-        <li> Datestamp: {{ testresult.datestamp }}</li>
-        <li> XML Output: <a href="{{ testresult.xml_path }}">{{ testresult.xml_path }}</a></li>
+<p><strong>Name:</strong> {{ testresult.name }}</p>
+<p><strong>Run: </strong> {{testresult.run_num}}</p>
 
-        <p>
- 
-    </ul>
-{% else %}
-    <p>No test cases are available.</p>
+<p><strong>Status:</strong> 
+{%if testresult.result == "PASS"%}
+<font color="green">{{ testresult.result }}</font>
+{%elif testresult.result == "ERROR"%}
+<font color="#b6b600">{{ testresult.result }}</font>
+{%else%}
+<font color="red">{{ testresult.result }}</font>
 {% endif %}
-</ul>
+</p>
+
+<p><strong>Runtime:</strong> {{ testresult.run_time }}</p>
+<p><strong>Datestamp:</strong> {{ testresult.datestamp }}</p>
+<p><strong>SHA List: </strong> {{testresult.sha_list}}</p>
+
+
+<p><strong>Raw XML Output:</strong> <a href="{{ xml_url }}">{{xml_url}}</a></p>
+
+<div class="panel-group" id="accordion">
+	<div class="panel panel-default">
+		<div class="panel-heading" data-toggle="collapse">
+			<h3 class="panel-title">
+			<a data-toggle="collapse" href="#collapseOne"><span class="glyphicon glyphicon-plus"></span>
+			Sys Output</a></h3>
+		</div>
+
+		<div id="collapseOne" class="panel-collapse collapse">
+			<div class="panel-body">
+				<pre>{{sysout}}</pre>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading" data-toggle="collapse">
+			<h3 class="panel-title">
+			<a data-toggle="collapse" href="#collapseTwo"><span class="glyphicon glyphicon-plus"></span>
+			Mav Output</a></h3>
+		</div>
+
+		<div id="collapseTwo" class="panel-collapse collapse">
+			<div class="panel-body">
+				<pre>{{mavout}}</pre>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading" data-toggle="collapse">
+			<h3 class="panel-title">
+			<a data-toggle="collapse" href="#collapseThree"><span class="glyphicon glyphicon-plus"></span>
+			JSBSim Output</a></h3>
+		</div>
+
+		<div id="collapseThree" class="panel-collapse collapse">
+			<div class="panel-body">
+				<pre>{{jsbout}}</pre>
+			</div>
+		</div>
+	</div>
+</div>
+
+ 
+{% else %}
+    <p>No test result details are available.</p>
+{% endif %}
+{% endblock content %}

@@ -1,13 +1,36 @@
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% extends "base.html" %}
 
-Test Runs:
+{% block breadcrumb %}
+<li><a href = "{% url 'resultsdisplay:index' %}"> {{ project_name }}</a></li>
+<li class="active">Test Runs</li>
+{% endblock breadcrumb %}
+
 {% if testrun_list %}
-    <ul>
-    {% for testrun in testrun_list %}
-        <li><a href="{% url 'resultsdisplay:TestGroup' testrun.project_id testrun.run_num %}">{{ testrun.run_num }}</a></li>
-    {% endfor %}
-    </ul>
+
+	{% block table_toprow %}
+    	<th> Test Run </th>
+    	<th> Date </th>
+    	<th> Time </th>
+    	<th> PASS </th>
+    	<th> FAIL </th>
+    	<th> ERROR </th>
+    	<th> Total </th>
+    {% endblock table_toprow %}
+
+    {% block table_contents %}
+	    {% for testrun in testrun_list %}
+	        <tr>
+	        	<td><a href="{% url 'resultsdisplay:TestGroup' testrun.project_id testrun.run_num %}">{{ testrun.run_num }}</a></td>
+	        	<td> {{testrun.datestamp }} </td>
+	        	<td> {{testrun.total_time}} </td>
+	        	<td> {{testrun.passed}} </td>
+	        	<td> {{testrun.failed}} </td>
+	        	<td> {{testrun.errored}} </td>
+	        	<td> {{testrun.total}} </td>
+	        </tr>
+	    {% endfor %}
+    {% endblock table_contents %}
+
 {% else %}
     <p>No test runs are available.</p>
 {% endif %}
-</ul>

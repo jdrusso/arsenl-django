@@ -1,13 +1,41 @@
-{% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'resultsdisplay/style.css' %}" />
+{% extends "base.html" %}
 
-Projects:
+{% block breadcrumb %}
+<li class="active">Projects</li>
+{% endblock breadcrumb %}
+
+<div class="container">
+
 {% if project_list %}
-    <ul>
+
+    {% block table_toprow %}
+    	<th> Name </th>
+    	<th> Tests </th>
+    	<th> Latest runtime (seconds) </th>
+    	<th> PASS </th>
+    	<th> FAIL </th>
+    	<th> ERROR </th>
+    	<th> Total </th>
+    {% endblock table_toprow %}
+
+    {% block table_contents %}
     {% for project in project_list %}
-        <li><a href="{% url 'resultsdisplay:TestRun' project.project_id %}">{{ project.name }}</a></li>
+        <tr>
+	        <td><a href="{% url 'resultsdisplay:TestRun' project.project_id %}">{{ project.name }}</a></td>
+	        <td> {{project.total_tests}} </td>
+	        <td> {{project.total_time}} </td>
+	        <td> {{project.passed}} </td>
+	        <td> {{project.failed}} </td>
+	        <td> {{project.errored}} </td>
+	        <td> {{project.total}} </td>
+        </tr>
+        <tr>
+	        <td> Lifetime {{project.total_runs}} </td>
+        </tr>
     {% endfor %}
-    </ul>
+    {% endblock table_contents %}
+
 {% else %}
     <p>No projects are available.</p>
 {% endif %}
+</div>

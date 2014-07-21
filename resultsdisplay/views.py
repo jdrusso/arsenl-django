@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.views import generic
 from resultsdisplay.models import TestResult, TestCase, Project
+from django.db.models import Sum, Max
+from django.conf import settings
+import xml.etree.ElementTree as ET
 
 group_id = {'Unit' : 0, 'Regression' : 1}
 group_name = {0 : 'Unit', 1 : 'Regression'}
@@ -14,6 +17,45 @@ class IndexView(generic.ListView):
 		"""Return all the current projects."""
 		return Project.objects.order_by('project_id')
 
+	def get_context_data(self, **kwargs):
+		context = super(IndexView, self).get_context_data(**kwargs)
+
+		for aproject in context['project_list']:
+
+			aproject.mostRecentRun = TestResult.objects.aggregate(Max('run_num'))['run_num__max']
+
+			aproject.total_time = TestResult.objects.filter(
+				run_num__exact=aproject.mostRecentRun,
+				project_id__exact=aproject.project_id).aggregate(Sum('run_time'))['run_time__sum']
+
+			aproject.total_tests = TestResult.objects.filter(
+				run_num__exact=aproject.mostRecentRun,
+				project_id__exact=aproject.project_id).count()
+
+			aproject.total_runs = TestResult.objects.filter(
+				project_id__exact=aproject.project_id).distinct('run_num').count()
+			
+			aproject.passed = TestResult.objects.filter(
+				run_num__exact=aproject.mostRecentRun,
+				project_id__exact=aproject.project_id,
+				result__exact="PASS").count()
+
+			aproject.failed = TestResult.objects.filter(
+				run_num__exact=aproject.mostRecentRun,
+				project_id__exact=aproject.project_id,
+				result__exact="FAIL").count()
+
+			aproject.errored = TestResult.objects.filter(
+				run_num__exact=aproject.mostRecentRun,
+				project_id__exact=aproject.project_id,
+				result__exact="ERROR").count()
+
+			aproject.total = TestResult.objects.filter(
+				run_num__exact=aproject.mostRecentRun,
+				project_id__exact=aproject.project_id).count()
+		
+		return context
+
 class TestRunView(generic.ListView):
 
 	pk_url_kwarg = 'run_pk'
@@ -23,6 +65,37 @@ class TestRunView(generic.ListView):
 
 	def get_queryset(self):
 		return TestResult.objects.values().distinct('run_num')[::-1]
+
+	def get_context_data(self, **kwargs):
+		context = super(TestRunView, self).get_context_data(**kwargs)
+		context['project_id'] = int(self.kwargs['pk'])
+		context['project_name'] = \
+			Project.objects.filter(project_id__exact=context['project_id']).values()[0]['name']
+
+		for run in context['testrun_list']:
+			var = TestResult.objects.raw('''SELECT sum(CAST (run_time AS float)) AS x
+				WHERE run_num = %s''',
+				params=[run['run_num']])
+			run['total_time'] = TestResult.objects.filter(
+				run_num__exact=run['run_num']).aggregate(Sum('run_time'))['run_time__sum']
+
+			run['passed'] = TestResult.objects.filter(
+				run_num__exact=run['run_num'],
+				result__exact="PASS", 
+				project_id__exact=context['project_id']).count()
+			run['failed'] = TestResult.objects.filter(
+				run_num__exact=run['run_num'],
+				project_id__exact=context['project_id'],
+				result__exact="FAIL").count()
+			run['errored'] = TestResult.objects.filter(
+				run_num__exact=run['run_num'],
+				project_id__exact=context['project_id'],
+				result__exact="ERROR").count()
+			run['total'] = TestResult.objects.filter(
+				project_id__exact=context['project_id'],
+				run_num__exact=run['run_num']).count()
+
+		return context
 
 class TestGroupView(generic.ListView):
 
@@ -39,10 +112,52 @@ class TestGroupView(generic.ListView):
 		context = super(TestGroupView, self).get_context_data(**kwargs)
 		context['run_num'] = int(self.kwargs['run_num'])
 		context['project_id'] = int(self.kwargs['project_pk'])
+		context['project_name'] = \
+			Project.objects.filter(project_id__exact=context['project_id']).values()[0]['name']
 
 		for group in context['testgroup_list']:
 
 			group['type_num'] = group_id[group['test_type']]
+
+
+			type_id = {}
+			for case in TestCase.objects.values():
+				type_id[case['test_case_id']] = case['test_type']
+
+			this_type_name = group['test_type']
+			this_type_id = group_id[this_type_name]
+
+			valid_ids = [x for x in type_id if type_id[x] == this_type_name]
+
+			group['total_time'] = TestResult.objects.filter(
+				test_case_id__in=valid_ids,
+				run_num__exact=context['run_num'],
+				project_id__exact=context['project_id']
+				).aggregate(Sum('run_time'))['run_time__sum']
+
+			group['passed'] = TestResult.objects.filter(
+				test_case_id__in=valid_ids,
+				run_num__exact=context['run_num'],
+				result__exact="PASS", 
+				project_id__exact=context['project_id']).count()
+
+			group['failed'] = TestResult.objects.filter(
+				test_case_id__in=valid_ids,
+				run_num__exact=context['run_num'],
+				project_id__exact=context['project_id'],
+				result__exact="FAIL").count()
+
+			group['errored'] = TestResult.objects.filter(
+				test_case_id__in=valid_ids,
+				run_num__exact=context['run_num'],
+				project_id__exact=context['project_id'],
+				result__exact="ERROR").count()
+
+			group['total'] = TestResult.objects.filter(
+				test_case_id__in=valid_ids,
+				run_num__exact=context['run_num'],
+				project_id__exact=context['project_id']).count()
+
 		return context
 
 class TestCaseView(generic.ListView):
@@ -54,7 +169,6 @@ class TestCaseView(generic.ListView):
 
 	def get_queryset(self):
 		"""Return all the current test cases"""
-		#return TestCase.objects.values()
 
 		this_type_id = int(self.kwargs['group_id'])
 		this_type_name = group_name[this_type_id]
@@ -73,17 +187,19 @@ class TestCaseView(generic.ListView):
 		context = super(TestCaseView, self).get_context_data(**kwargs)
 		context['project_id'] = int(self.kwargs['project_pk'])
 		context['group_id'] = int(self.kwargs['group_id'])
+		context['run_num'] = int(self.kwargs['run_num'])
+		context['type_name'] = group_name[int(self.kwargs['group_id'])]
+		context['project_name'] = \
+			Project.objects.filter(project_id__exact=context['project_id']).values()[0]['name']
 
 		for case in context['testcase_list']:
 
 			case.name = TestCase.objects.extra(where=['test_case_id=%s'],
 			 	params=[case.test_case_id])[0]
 
-			case.type = TestCase.objects.filter(test_case_id__exact=case.test_case_id).values()[0]['test_type']
+			case.test_function = TestCase.objects.filter(test_case_id__exact=case.test_case_id).values()[0]['test_function']
 
-			#case.type = 'Unit' or 'Regression', group_id = 0, 1
-			#if not group_id[case.type] == context['group_id']:
-			#	case.delete()
+			case.type = TestCase.objects.filter(test_case_id__exact=case.test_case_id).values()[0]['test_type']
 
 		return context
 
@@ -98,10 +214,23 @@ class TestResultView(generic.DetailView):
 
 	def get_context_data(self, **kwargs):
 		context = super(TestResultView, self).get_context_data(**kwargs)
+		context['project_id'] = int(self.kwargs['project_pk'])
+		context['run_num'] = int(self.kwargs['run_num'])
+		context['group_id'] = int(self.kwargs['group_id'])
+		context['type_name'] = group_name[int(self.kwargs['group_id'])]
+		context['project_name'] = \
+			Project.objects.filter(project_id__exact=context['project_id']).values()[0]['name']
 
-		context['testresult']['name'] = TestCase.objects.extra(where=['test_case_id=%s'], params=[context['testresult']['test_case_id']])[0]
-		#context['testresult']['name'] = self.kwargs['pk']
+		context['testresult']['name'] = TestCase.objects.extra(where=['test_case_id=%s'], 
+			params=[context['testresult']['test_case_id']])[0]
+
+		xml_url = getattr(settings, "STATIC_ROOT", None) + r'web/' + context['testresult']['xml_path']
+		context['xml_url'] = getattr(settings, "STATIC_URL", None) + r'web/' + context['testresult']['xml_path']
+
+		self.xmlTree = ET.parse(xml_url)
+
+		context['mavout'] = self.xmlTree.getroot()[0].text
+		context['jsbout'] = self.xmlTree.getroot()[1].text
+		context['sysout'] = self.xmlTree.getroot()[2].text
+
 		return context
-
-
-#class TestResultView(generic.DetailView):

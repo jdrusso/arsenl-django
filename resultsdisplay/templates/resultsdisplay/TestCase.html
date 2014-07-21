@@ -1,14 +1,46 @@
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-Test Cases:
+{% extends "base.html" %}
+
+
+{% block breadcrumb %}
+<li><a href = "{% url 'resultsdisplay:index' %}"> {{project_name}}</a></li>
+<li><a href = "{% url 'resultsdisplay:TestRun' project_id %}"> Run {{run_num}}</a></li>
+<li><a href = "{% url 'resultsdisplay:TestGroup' project_id run_num %}"> {{type_name}} Tests</a></li>
+<li class="active">Test Cases</li>
+{% endblock breadcrumb %}
+
+<div class="container">
+
 {% if testcase_list %}
-    <ul>
+    
+	{% block table_toprow %}
+    	<th> Test Name </th>
+    	<th> Test Function </th>
+    	<th> Result </th>
+    	<th> Time </th>
+    {% endblock table_toprow %}
+
+    {% block table_contents %}
     {% for testcase in testcase_list %}
-        <li> <a href="{% url 'resultsdisplay:Details' testcase.project_id testcase.run_num group_id testcase.test_result_id %}"> 
-        {{ testcase.result }} -- {{testcase.name}}</a>
-        </li>
+    	<tr>
+        	<td> <a href="{% url 'resultsdisplay:Details' testcase.project_id testcase.run_num group_id testcase.test_result_id %}">
+        	{{testcase.name}}</a></td>
+        	<td> {{testcase.test_function}} </td>
+        	<td> 
+				{%if testcase.result == "PASS"%}
+				<font color="green">{{ testcase.result }}</font>
+				{%elif testcase.result == "ERROR"%}
+				<font color="#b6b600">{{ testcase.result }}</font>
+				{%else%}
+				<font color="red">{{ testcase.result }}</font>
+				{% endif %}
+			</td>
+        	<td> {{testcase.run_time}} </td>
+        </tr>
     {% endfor %}
-    </ul>
+    {% endblock table_contents %}
+
 {% else %}
     <p>No test cases are available.</p>
 {% endif %}
 </ul>
+</div>

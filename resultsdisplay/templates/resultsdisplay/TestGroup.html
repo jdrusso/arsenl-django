@@ -1,14 +1,39 @@
-<hl>{{ project.name }}</hl>
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% extends "base.html" %}
 
-Test Groups:
+{% block breadcrumb %}
+<li><a href = "{% url 'resultsdisplay:index' %}"> {{project_name}}</a></li>
+<li><a href = "{% url 'resultsdisplay:TestRun' project_id %}"> Run {{run_num}}</a></li>
+<li class="active">Test Groups</li>
+{% endblock breadcrumb %}
+
+<div class="container">
+
 {% if testgroup_list %}
-    <ul>
+    {% block table_toprow %}
+    	<th> Test Group </th>
+    	<th> Time </th>
+    	<th> PASS </th>
+    	<th> FAIL </th>
+    	<th> ERROR </th>
+    	<th> Total </th>
+    {% endblock table_toprow %}
+
+    {% block table_contents %}
     {% for testgroup in testgroup_list %}
-        <li><a href="{% url 'resultsdisplay:TestCase' project_id run_num testgroup.type_num %}">{{ testgroup.test_type }}</a></li>
+    	<tr>
+    		<td>
+        		<a href="{% url 'resultsdisplay:TestCase' project_id run_num testgroup.type_num %}">{{ testgroup.test_type }}</a>
+        	</td>
+        	<td> {{testgroup.total_time}} </td>
+        	<td> {{testgroup.passed}} </td>
+        	<td> {{testgroup.failed}} </td>
+        	<td> {{testgroup.errored}} </td>
+        	<td> {{testgroup.total}} </td>
+        </tr>
     {% endfor %}
-    </ul>
+    {% endblock table_contents %}
+
 {% else %}
     <p>No test groups are available.</p>
 {% endif %}
-</ul>
+</thead>

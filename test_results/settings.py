@@ -36,7 +36,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'bootstrap3',
     'resultsdisplay',
+    'twitter_bootstrap',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -65,6 +67,7 @@ DATABASES = {
     }
 }
 
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
@@ -83,4 +86,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/home/jdrusso/django/test_results/resultsdisplay/static/'
+
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+
+BOOTSTRAP3 = {
+    'theme_url':'/static/theme.css'
+}
