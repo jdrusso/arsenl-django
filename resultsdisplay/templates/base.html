@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+<script type="text/javascript" src="{{ STATIC_URL }}jquery.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}jquery.tablesorter.js"></script> 
+{% bootstrap_javascript %}
+{% block includes %}
+{% endblock includes %}
+
+<header>
+	<h2><img style="height:50px;display:inline" class="img-responsive" src="/static/arsenl.bmp"/> ARSENL Test Reporting</h2></span>
+</header>
+
+<ul class="breadcrumb">
+{% block breadcrumb %}
+{% endblock breadcrumb %}
+</ul>
+
+<div class="container">
+
+<table id="display_table" class="table table-striped">
+
+	<thead>
+	<tr>
+		{% block table_toprow %}
+		{% endblock table_toprow %}
+	</tr>
+	</thead>
+
+	<tbody>
+		{% block table_contents %}
+		{% endblock table_contents %}
+	</tbody>
+
+</table>
+{% block content %}
+{% endblock content %}
+</div>
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function() { 
+    $("#display_table").tablesorter();
+    $('th.header').hover(function(argument) {
+    	$(this).toggleClass('arrow');
+    	console.log('hover', $(this));
+    });
+});
+</script>
+
+<script language="javascript" type="text/javascript">
+$(""
+); </script>
