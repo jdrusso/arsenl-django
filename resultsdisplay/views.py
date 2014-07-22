@@ -9,7 +9,7 @@ from jenkinsapi.jenkins import Jenkins
 group_id = {'Unit' : 0, 'Regression' : 1}
 group_name = {0 : 'Unit', 1 : 'Regression'}
 
-JENKINS_HOSTNAME = 'jabba'
+JENKINS_HOSTNAME = 'localhost'
 
 class IndexView(generic.ListView):
 
