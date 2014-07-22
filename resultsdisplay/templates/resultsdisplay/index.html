@@ -38,4 +38,72 @@
 {% else %}
     <p>No projects are available.</p>
 {% endif %}
+
+{% block content %}
+<div class="container">
+<div class="center-block">
+
+{% for job in job_list %}
+
+{% if job.running %}
+	<div class="panel panel-default">
+
+		<div class="panel-heading">Current Test Status</div>
+
+		<div class="panel-body">
+			{{job.name}} is currently running.
+		</div>
+
+		<div class="panel-footer">
+
+			<div class="progress progress-striped active" id="{{job.name}}_progressouter" data-url={{job.progressurl}}>
+   				<div class="bar" id="progress" data-url={{job.progressurl}}></div>
+			</div>
+		</div>
+
+	</div>
+{% else %}
+
+{% endif %}
+{% endfor %}
+
+{% if test_running %}
+{% else %}
+	<div class="panel panel-default">
+	<div class="panel-heading">Current Test Status</div>
+
+		<div class="panel-body">
+			No tests currently running.
+		</div>
+	</div>
+{% endif %}
 </div>
+</div>
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){
+  var progresspump = setInterval(function(){
+  	$('.progress').each(function(el, i) {
+  		console.log($(this).data('url'));
+  		/* query the completion percentage from the server */
+	    $.get($(this).data('url'), function(data){
+	      /* update the progress bar width */
+	      $("#progress").css('width',data+'%');
+	      /* and display the numeric value */
+	      $("#progress").html(data+'%');
+
+	      /* test to see if the job has completed */
+	      if(data > 99.999) {
+	        clearInterval(progresspump);
+	        $("#progressouter").removeClass("active");
+	        $("#progress").html("Done");
+	      }
+  	});
+    
+    })
+  }, 500);});
+</script>
+
+{% endblock content %}
+
+</div>
+

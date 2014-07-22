@@ -4,9 +4,12 @@ from resultsdisplay.models import TestResult, TestCase, Project
 from django.db.models import Sum, Max
 from django.conf import settings
 import xml.etree.ElementTree as ET
+from jenkinsapi.jenkins import Jenkins
 
 group_id = {'Unit' : 0, 'Regression' : 1}
 group_name = {0 : 'Unit', 1 : 'Regression'}
+
+JENKINS_HOSTNAME = 'jabba'
 
 class IndexView(generic.ListView):
 
@@ -34,7 +37,7 @@ class IndexView(generic.ListView):
 
 			aproject.total_runs = TestResult.objects.filter(
 				project_id__exact=aproject.project_id).distinct('run_num').count()
-			
+
 			aproject.passed = TestResult.objects.filter(
 				run_num__exact=aproject.mostRecentRun,
 				project_id__exact=aproject.project_id,
@@ -53,7 +56,32 @@ class IndexView(generic.ListView):
 			aproject.total = TestResult.objects.filter(
 				run_num__exact=aproject.mostRecentRun,
 				project_id__exact=aproject.project_id).count()
-		
+
+		jobs = []
+
+		context['test_running'] = True
+
+		try:
+			J = Jenkins('http://jabba:8080')
+
+			for job in J.keys():
+				job_url = J[job]._data['url']
+
+
+				a_job = {
+				'name':J[job].name,
+				'running':True,#J[job].is_running()
+				'url':job_url,
+				'progressurl':job_url+'lastBuild/api/xml?depth=1&xpath=*/executor/progress/text()'
+				}
+
+				jobs.append(a_job)
+
+		except Exception:
+			context['test_running'] = False
+
+		context['job_list'] = jobs
+
 		return context
 
 class TestRunView(generic.ListView):
