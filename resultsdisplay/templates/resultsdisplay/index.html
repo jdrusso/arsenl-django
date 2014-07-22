@@ -42,31 +42,30 @@
 {% block content %}
 <div class="container">
 <div class="center-block">
-
 {% for job in job_list %}
+	{% if test_running %}
+		{% if job.running %}
+			<div class="panel panel-default">
 
-{% if job.running %}
-	<div class="panel panel-default">
+				<div class="panel-heading">Current Test Status</div>
 
-		<div class="panel-heading">Current Test Status</div>
+				<div class="panel-body">
+					{{job.name}} is currently running.
+				</div>
 
-		<div class="panel-body">
-			{{job.name}} is currently running.
-		</div>
+				<div class="panel-footer">
 
-		<div class="panel-footer">
+					<div class="progress progress-striped active" id="{{job.name}}_progressouter" data-url={{job.progressurl}}>
+		   				<div class="progress-bar" id="{{job.name}}_progress" data-url={{job.progressurl}}></div>
+					</div>
+				</div>
 
-			<div class="progress progress-striped active" id="{{job.name}}_progressouter" data-url={{job.progressurl}}>
-   				<div class="bar" id="progress" data-url={{job.progressurl}}></div>
 			</div>
-		</div>
+		{% else %}
 
-	</div>
-{% else %}
-
-{% endif %}
+		{% endif %}
+	{% endif %}
 {% endfor %}
-
 {% if test_running %}
 {% else %}
 	<div class="panel panel-default">
@@ -83,19 +82,21 @@
 $(document).ready(function(){
   var progresspump = setInterval(function(){
   	$('.progress').each(function(el, i) {
-  		console.log($(this).data('url'));
+  		var $this = $(this);
+  		var $bar  = $this.find('.progress-bar');
   		/* query the completion percentage from the server */
-	    $.get($(this).data('url'), function(data){
+	    $.get($this.data('url'), function(data){
 	      /* update the progress bar width */
-	      $("#progress").css('width',data+'%');
+	      $bar.css('width',data+'%');
 	      /* and display the numeric value */
-	      $("#progress").html(data+'%');
+	      $bar.html(data+'%');
 
 	      /* test to see if the job has completed */
-	      if(data > 99.999) {
+	      if(data > 99 || data == 'XPath */executor/progress/text() didn?t match') {
 	        clearInterval(progresspump);
-	        $("#progressouter").removeClass("active");
-	        $("#progress").html("Done");
+	        $this.removeClass("active");
+	        $bar.html("Done");
+	        $bar.css('color','green');
 	      }
   	});
     
