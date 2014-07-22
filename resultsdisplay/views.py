@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.views import generic
+from django.views.generic.list import MultipleObjectMixin
+from django.http import HttpResponse
 from resultsdisplay.models import TestResult, TestCase, Project
 from django.db.models import Sum, Max
 from django.conf import settings
@@ -9,7 +11,7 @@ from jenkinsapi.jenkins import Jenkins
 group_id = {'Unit' : 0, 'Regression' : 1}
 group_name = {0 : 'Unit', 1 : 'Regression'}
 
-JENKINS_HOSTNAME = 'localhost'
+JENKINS_HOSTNAME = 'jabba'
 
 class IndexView(generic.ListView):
 
@@ -83,6 +85,11 @@ class IndexView(generic.ListView):
 		context['job_list'] = jobs
 
 		return context
+
+	def get(self, request, *args, **kwargs):
+		self.object_list = self.get_queryset()
+		context = self.get_context_data()
+		return addCORSHeaders(render(request, self.template_name, context))
 
 class TestRunView(generic.ListView):
 
@@ -262,3 +269,14 @@ class TestResultView(generic.DetailView):
 		context['sysout'] = self.xmlTree.getroot()[2].text
 
 		return context
+
+
+
+def addCORSHeaders(theHttpResponse):
+    if theHttpResponse and isinstance(theHttpResponse, HttpResponse):
+        theHttpResponse['Access-Control-Allow-Origin'] = '*'
+        theHttpResponse['Access-Control-Max-Age'] = '120'
+        theHttpResponse['Access-Control-Allow-Credentials'] = 'true'
+        theHttpResponse['Access-Control-Allow-Methods'] = 'HEAD, GET, OPTIONS, POST, DELETE'
+        theHttpResponse['Access-Control-Allow-Headers'] = 'origin, content-type, accept, x-requested-with'
+    return theHttpResponse
