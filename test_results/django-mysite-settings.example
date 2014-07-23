@@ -1,0 +1,13 @@
+#Rename this to .django-mysite-settings-example and put it in ~/ for production
+#Populate these fields with your info as needed
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'database',
+        'USER': 'username',
+        'PASSWORD': 'password'
+    }
+}
+
+SECRET_KEY = '5$hbg*3b##68q^0^8coheqw^x#lo$21!hw&-urxk%@bii!h%*!'
