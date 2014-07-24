@@ -16,6 +16,7 @@
 {% block content %}
 {% if testresult %}
 <p><strong>Name:</strong> {{ testresult.name }}</p>
+<p><strong>Run Number: </strong> {{ordered_run_num}} </p>
 <p><strong>Jenkins Run: </strong> {{testresult.run_num}}</p>
 
 <p><strong>Status:</strong> 
