@@ -42,6 +42,7 @@
 {% block content %}
 <div class="container">
 <div class="center-block">
+
 {% for job in job_list %}
 	{% if test_running %}
 		{% if job.running %}
@@ -55,8 +56,8 @@
 
 				<div class="panel-footer">
 
-					<div class="progress progress-striped active" id="{{job.name}}_progressouter" data-url={{job.progressurl}}>
-		   				<div class="progress-bar" id="{{job.name}}_progress" data-url={{job.progressurl}}></div>
+					<div class="progress progress-striped active" id="{{job.name}}_progressouter" data-apiurl={{job.apiurl}}>
+		   				<div class="progress-bar" id="{{job.name}}_progress" data-apiurl={{job.apiurl}}></div>
 					</div>
 				</div>
 
@@ -78,6 +79,7 @@
 {% endif %}
 </div>
 </div>
+
 <script language="javascript" type="text/javascript">
 $(document).ready(function(){
   var progresspump = setInterval(function(){
@@ -85,14 +87,16 @@ $(document).ready(function(){
   		var $this = $(this);
   		var $bar  = $this.find('.progress-bar');
   		/* query the completion percentage from the server */
-	    $.get($this.data('url'), function(data){
+	    $.getJSON($this.data('apiurl'), function(data){
+
+	      var progressNum = data.progress;
 	      /* update the progress bar width */
-	      $bar.css('width',data+'%');
+	      $bar.css('width',progressNum+'%');
 	      /* and display the numeric value */
-	      $bar.html(data+'%');
+	      $bar.html(progressNum+'%');
 
 	      /* test to see if the job has completed */
-	      if(data > 99 || data == 'XPath */executor/progress/text() didn?t match') {
+	      if(progressNum > 99 || progressNum == 'XPath */executor/progress/text() didn?t match') {
 	        clearInterval(progresspump);
 	        $this.removeClass("active");
 	        $bar.html("Done");

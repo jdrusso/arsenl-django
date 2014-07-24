@@ -6,12 +6,38 @@ from resultsdisplay.models import TestResult, TestCase, Project
 from django.db.models import Sum, Max
 from django.conf import settings
 import xml.etree.ElementTree as ET
-import requests
+import requests, base64, json
 
 group_id = {'Unit' : 0, 'Regression' : 1}
 group_name = {0 : 'Unit', 1 : 'Regression'}
 
 JENKINS_HOSTNAME = 'jabba'
+JENKINS_USERNAME = settings.JENKINS_USERNAME
+JENKINS_TOKEN = settings.JENKINS_TOKEN
+
+def jsonDump(request, project_name):
+
+	job_url = 'https://%s/ci/job/%s/'%(JENKINS_HOSTNAME, project_name)
+	
+	base64string = base64.encodestring('%s:%s' % 
+		(JENKINS_USERNAME, JENKINS_TOKEN)).replace('\n','')
+
+	auth_header = {"Authorization":"Basic %s" % base64string}
+
+	job_json = requests.get('%slastBuild/api/json?depth=1' % job_url, 
+		verify=False, headers=auth_header).json()
+
+	response_data = {
+		'name':project_name,
+		'running':(job_json['building'] == True)
+	}
+
+	try:
+		response_data['progress'] = job_json['executor']['progress']
+	except TypeError:
+		response_data['progress'] = 0
+
+	return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 class IndexView(generic.ListView):
 
@@ -67,23 +93,26 @@ class IndexView(generic.ListView):
 
 			for project in context['project_list']:
 
-				job_url = 'http://%s/ci/job/%s/'%(JENKINS_HOSTNAME, project.name)
-				job_json = requests.get('%slastBuild/api/json?depth=1' % job_url).json()
+				api_url = 'https://%s/api/%s/' % (JENKINS_HOSTNAME, project.name)
+
+				job_json = requests.get(api_url, verify=False).json()
 
 				a_job = {
-				'name':project.name,
-				'running':(requests.get(job_url + 'lastBuild/api/xml?depth=1&xpath=*/building/text()').text == 'true'),
-				'url':job_url,
-				'progressurl':job_url+'lastBuild/api/xml?depth=1&xpath=*/executor/progress/text()'
+					'name':project.name,
+					'running': job_json['running'],
+					'apiurl':api_url,
 				}
 
 				if a_job['running']:
 					context['test_running'] = True
 
+					context['err'] = ''
+
 				jobs.append(a_job)
 
-		except Exception:
+		except Exception as e:
 			context['test_running'] = False
+			context['err'] = e
 
 		context['job_list'] = jobs
 
