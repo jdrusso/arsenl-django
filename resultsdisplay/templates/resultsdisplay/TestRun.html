@@ -9,7 +9,7 @@
 {% if testrun_list %}
 
 	{% block table_toprow %}
-    	<th> Run Number </th>
+    	<th> Run </th>
     	<th> Jenkins Run ID </th>
     	<th> Date </th>
     	<th> Time </th>
@@ -21,9 +21,10 @@
 
     {% block table_contents %}
 	    {% for testrun in testrun_list %}
-	        <tr>
-	        	<td> {{testrun_list|length|subtract:forloop.counter}} </td>
-	        	<td><a href="{% url 'resultsdisplay:TestGroup' testrun.project_id testrun.run_num %}">{{ testrun.run_num }}</a></td>
+	    {% with ordered_run_num=testrun_list|length|subtract:forloop.counter|add:1 %}
+	        <tr class="clickableRow" data-url="{% url 'resultsdisplay:TestGroup' testrun.project_id testrun.run_num ordered_run_num %}">
+	        	<td> {{ordered_run_num}} </td>
+	        	<td> {{testrun.run_num }}</td>
 	        	<td> {{testrun.datestamp }} </td>
 	        	<td> {{testrun.total_time}} </td>
 	        	<td> {{testrun.passed}} </td>
@@ -31,6 +32,7 @@
 	        	<td> {{testrun.errored}} </td>
 	        	<td> {{testrun.total}} </td>
 	        </tr>
+	    {% endwith %}
 	    {% endfor %}
     {% endblock table_contents %}
 

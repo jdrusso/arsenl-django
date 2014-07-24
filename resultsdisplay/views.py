@@ -185,6 +185,7 @@ class TestGroupView(LoginRequiredMixin, generic.ListView):
 	def get_context_data(self, **kwargs):
 		context = super(TestGroupView, self).get_context_data(**kwargs)
 		context['run_num'] = int(self.kwargs['run_num'])
+		context['ordered_run_num'] = int(self.kwargs['ordered_run_num'])
 		context['project_id'] = int(self.kwargs['project_pk'])
 		context['project_name'] = \
 			Project.objects.filter(project_id__exact=context['project_id']).values()[0]['name']
@@ -262,6 +263,7 @@ class TestCaseView(LoginRequiredMixin, generic.ListView):
 		context['project_id'] = int(self.kwargs['project_pk'])
 		context['group_id'] = int(self.kwargs['group_id'])
 		context['run_num'] = int(self.kwargs['run_num'])
+		context['ordered_run_num'] = int(self.kwargs['ordered_run_num'])
 		context['type_name'] = group_name[int(self.kwargs['group_id'])]
 		context['project_name'] = \
 			Project.objects.filter(project_id__exact=context['project_id']).values()[0]['name']
@@ -290,6 +292,7 @@ class TestResultView(LoginRequiredMixin, generic.DetailView):
 		context = super(TestResultView, self).get_context_data(**kwargs)
 		context['project_id'] = int(self.kwargs['project_pk'])
 		context['run_num'] = int(self.kwargs['run_num'])
+		context['ordered_run_num'] = int(self.kwargs['ordered_run_num'])
 		context['group_id'] = int(self.kwargs['group_id'])
 		context['type_name'] = group_name[int(self.kwargs['group_id'])]
 		context['project_name'] = \

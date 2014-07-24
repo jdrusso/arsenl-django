@@ -2,7 +2,7 @@
 
 {% block breadcrumb %}
 <li><a href = "{% url 'resultsdisplay:index' %}"> {{project_name}}</a></li>
-<li><a href = "{% url 'resultsdisplay:TestRun' project_id %}"> Run {{run_num}}</a></li>
+<li><a href = "{% url 'resultsdisplay:TestRun' project_id %}"> Run {{ordered_run_num}}</a></li>
 <li class="active">Test Groups</li>
 {% endblock breadcrumb %}
 
@@ -20,10 +20,8 @@
 
     {% block table_contents %}
     {% for testgroup in testgroup_list %}
-    	<tr>
-    		<td>
-        		<a href="{% url 'resultsdisplay:TestCase' project_id run_num testgroup.type_num %}">{{ testgroup.test_type }}</a>
-        	</td>
+    	<tr class="clickableRow" data-url="{% url 'resultsdisplay:TestCase' project_id run_num ordered_run_num testgroup.type_num %}">
+    		<td> {{ testgroup.test_type }} </td>
         	<td> {{testgroup.total_time}} </td>
         	<td> {{testgroup.passed}} </td>
         	<td> {{testgroup.failed}} </td>

@@ -19,8 +19,8 @@
 
     {% block table_contents %}
     {% for project in project_list %}
-        <tr>
-	        <td><a href="{% url 'resultsdisplay:TestRun' project.project_id %}">{{ project.name }}</a></td>
+        <tr class="clickableRow" data-url="{% url 'resultsdisplay:TestRun' project.project_id %}">
+	        <td> {{ project.name }} </td>
 	        <td> {{project.total_time}} </td>
 	        <td> {{project.passed}} </td>
 	        <td> {{project.failed}} </td>

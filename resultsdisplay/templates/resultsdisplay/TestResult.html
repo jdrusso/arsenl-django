@@ -7,16 +7,16 @@
 
 {% block breadcrumb %}
 <li><a href = "{% url 'resultsdisplay:index' %}"> {{project_name}}</a> </li>
-<li><a href = "{% url 'resultsdisplay:TestRun' project_id %}"> Run {{run_num}}</a></li>
-<li><a href = "{% url 'resultsdisplay:TestGroup' project_id run_num %}"> {{type_name}} Tests </a></li>
-<li><a href = "{% url 'resultsdisplay:TestCase' project_id run_num group_id %}"> {{testresult.name}} </a></li>
+<li><a href = "{% url 'resultsdisplay:TestRun' project_id %}"> Run {{ordered_run_num}}</a></li>
+<li><a href = "{% url 'resultsdisplay:TestGroup' project_id run_num ordered_run_num %}"> {{type_name}} Tests </a></li>
+<li><a href = "{% url 'resultsdisplay:TestCase' project_id run_num ordered_run_num group_id %}"> {{testresult.name}} </a></li>
 <li class="active"> Test Details </li>
 {% endblock breadcrumb %}
 
 {% block content %}
 {% if testresult %}
 <p><strong>Name:</strong> {{ testresult.name }}</p>
-<p><strong>Run: </strong> {{testresult.run_num}}</p>
+<p><strong>Jenkins Run: </strong> {{testresult.run_num}}</p>
 
 <p><strong>Status:</strong> 
 {%if testresult.result == "PASS"%}

@@ -62,3 +62,11 @@ $(document).ready(function() {
 <script language="javascript" type="text/javascript">
 $(""
 ); </script>
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function() {
+      $(".clickableRow").on("click", function() {
+          location.href=$(this).data('url');
+      });
+});
+</script>
