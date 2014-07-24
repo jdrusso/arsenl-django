@@ -13,4 +13,8 @@ DATABASES = {
 SECRET_KEY = '5$hbg*3b##68q^0^8coheqw^x#lo$21!hw&-urxk%@bii!h%*!'
 
 JENKINS_USERNAME = 'username'
-JENKINS_TOKEN = 'my-api-token'
+JENKINS_TOKEN = 'my-api-token
+
+AUTH_LDAP_SERVER_URI = "ldap://your.ldap.server"
+AUTH_LDAP_BIND_DN = "ldapuser"
+AUTH_LDAP_BIND_PASSWORD = "ldappassword"

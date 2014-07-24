@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+{{form.errorsjdrus}}
+<div class="container" align="center">
+<div class="well" style="width:500px;" align="left">
+
+<form action="{% url 'resultsdisplay:login' %}" method="post">
+    <div class="form-group">
+        <label for="inputUsename">Username</label>
+        <input type="username" class="form-control" id="username"
+        placeholder="Username" name="username">
+    </div>
+    <div class="form-group">
+        <label for="inputPassword">Password</label>
+        <input type="password" class="form-control" id="password"
+        placeholder="Password" name="password">
+    </div>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{% url 'resultsdisplay:index' %}" /> 
+    <input type="submit" id="submit" value="Login" class="btn btn-primary" />
+</form>
+
+</div>
+</div>
+
+{% endblock content %}
+
+<!-- <html>
+<body>
+    {%if form.errors %}
+    <p> Invalid username/password combination, please try again </p>
+    {% endif %}
+
+    <h1>Welcome to My Site!</h1>
+    <form action="{% url 'resultsdisplay:login' %}" method="post">
+    {% csrf_token %}
+        {{form.username.label_tag}}{{form.username}}
+        {{form.password.label_tag}}{{form.password}}
+        <input type="submit" id="submit" name="submit" value="Sign in" />
+        <input type="hidden" name="next" value="{% url 'resultsdisplay:index' %}" />        
+    </form>
+</body>
+</html> -->

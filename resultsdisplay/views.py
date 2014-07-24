@@ -7,6 +7,8 @@ from django.db.models import Sum, Max
 from django.conf import settings
 import xml.etree.ElementTree as ET
 import requests, base64, json
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 group_id = {'Unit' : 0, 'Regression' : 1}
 group_name = {0 : 'Unit', 1 : 'Regression'}
@@ -14,6 +16,11 @@ group_name = {0 : 'Unit', 1 : 'Regression'}
 JENKINS_HOSTNAME = 'jabba'
 JENKINS_USERNAME = settings.JENKINS_USERNAME
 JENKINS_TOKEN = settings.JENKINS_TOKEN
+
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 def jsonDump(request, project_name):
 
@@ -39,7 +46,7 @@ def jsonDump(request, project_name):
 
 	return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-class IndexView(generic.ListView):
+class IndexView(LoginRequiredMixin, generic.ListView):
 
 	template_name = 'resultsdisplay/index.html'
 	context_object_name = 'project_list'
@@ -123,7 +130,7 @@ class IndexView(generic.ListView):
 		context = self.get_context_data()
 		return addCORSHeaders(render(request, self.template_name, context))
 
-class TestRunView(generic.ListView):
+class TestRunView(LoginRequiredMixin, generic.ListView):
 
 	pk_url_kwarg = 'run_pk'
 
@@ -164,7 +171,7 @@ class TestRunView(generic.ListView):
 
 		return context
 
-class TestGroupView(generic.ListView):
+class TestGroupView(LoginRequiredMixin, generic.ListView):
 
 	pk_url_kwarg = 'run_pk'
 
@@ -227,7 +234,7 @@ class TestGroupView(generic.ListView):
 
 		return context
 
-class TestCaseView(generic.ListView):
+class TestCaseView(LoginRequiredMixin, generic.ListView):
 
 	pk_url_kwarg = 'group_pk'
 
@@ -270,7 +277,7 @@ class TestCaseView(generic.ListView):
 
 		return context
 
-class TestResultView(generic.DetailView):
+class TestResultView(LoginRequiredMixin, generic.DetailView):
 
 	template_name = 'resultsdisplay/TestResult.html'
 	context_object_name = 'testresult'
@@ -301,8 +308,6 @@ class TestResultView(generic.DetailView):
 		context['sysout'] = self.xmlTree.getroot()[2].text
 
 		return context
-
-
 
 def addCORSHeaders(theHttpResponse):
     if theHttpResponse and isinstance(theHttpResponse, HttpResponse):
