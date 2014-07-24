@@ -9,8 +9,7 @@
 {% if project_list %}
 
     {% block table_toprow %}
-    	<th> Name </th>
-    	<th> Tests </th>
+    	<th> Project Name </th>
     	<th> Latest runtime (seconds) </th>
     	<th> PASS </th>
     	<th> FAIL </th>
@@ -22,7 +21,6 @@
     {% for project in project_list %}
         <tr>
 	        <td><a href="{% url 'resultsdisplay:TestRun' project.project_id %}">{{ project.name }}</a></td>
-	        <td> {{project.total_tests}} </td>
 	        <td> {{project.total_time}} </td>
 	        <td> {{project.passed}} </td>
 	        <td> {{project.failed}} </td>
@@ -30,7 +28,7 @@
 	        <td> {{project.total}} </td>
         </tr>
         <tr>
-	        <td> Lifetime {{project.total_runs}} </td>
+	        <td> Total Test Runs in Database: {{project.total_runs}} </td>
         </tr>
     {% endfor %}
     {% endblock table_contents %}

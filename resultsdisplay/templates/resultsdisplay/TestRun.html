@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load subtraction %}
 
 {% block breadcrumb %}
 <li><a href = "{% url 'resultsdisplay:index' %}"> {{ project_name }}</a></li>
@@ -8,7 +9,8 @@
 {% if testrun_list %}
 
 	{% block table_toprow %}
-    	<th> Test Run </th>
+    	<th> Run Number </th>
+    	<th> Jenkins Run ID </th>
     	<th> Date </th>
     	<th> Time </th>
     	<th> PASS </th>
@@ -20,6 +22,7 @@
     {% block table_contents %}
 	    {% for testrun in testrun_list %}
 	        <tr>
+	        	<td> {{testrun_list|length|subtract:forloop.counter}} </td>
 	        	<td><a href="{% url 'resultsdisplay:TestGroup' testrun.project_id testrun.run_num %}">{{ testrun.run_num }}</a></td>
 	        	<td> {{testrun.datestamp }} </td>
 	        	<td> {{testrun.total_time}} </td>
