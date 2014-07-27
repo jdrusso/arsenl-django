@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 import requests, base64, json
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django import forms
 
 group_id = {'Unit' : 0, 'Regression' : 1}
 group_name = {0 : 'Unit', 1 : 'Regression'}
@@ -16,6 +17,9 @@ group_name = {0 : 'Unit', 1 : 'Regression'}
 JENKINS_HOSTNAME = 'jabba'
 JENKINS_USERNAME = settings.JENKINS_USERNAME
 JENKINS_TOKEN = settings.JENKINS_TOKEN
+
+class RunSelectForm(forms.Form):
+	runs = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
 
 class LoginRequiredMixin(object):
     @method_decorator(login_required)
@@ -126,8 +130,10 @@ class IndexView(LoginRequiredMixin, generic.ListView):
 		return context
 
 	def get(self, request, *args, **kwargs):
+
 		self.object_list = self.get_queryset()
 		context = self.get_context_data()
+
 		return addCORSHeaders(render(request, self.template_name, context))
 
 class TestRunView(LoginRequiredMixin, generic.ListView):
@@ -170,6 +176,29 @@ class TestRunView(LoginRequiredMixin, generic.ListView):
 				run_num__exact=run['run_num']).count()
 
 		return context
+
+
+	def get(self, request, *args, **kwargs):
+
+		self.object_list = self.get_queryset()
+		context = self.get_context_data()
+
+
+		context['POST'] = False
+		context['thename'] = 'POST'
+
+		if request.method == 'POST':
+			form = RunSelectForm()
+			context['POST'] = True
+			context['Checkboxes'] = TestResult.objects.filter(
+				project_id__exact=context['project_id']).distinct('run_num').all()
+			#context['Checkboxes'] = request.POST.getlist('checkbox')
+
+		return render(request, self.template_name, context)
+
+	def post(self, request, *args, **kwargs):
+
+		return self.get(request, *args, **kwargs)
 
 class TestGroupView(LoginRequiredMixin, generic.ListView):
 

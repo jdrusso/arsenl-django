@@ -30,6 +30,8 @@
 
 <div class="container">
 
+{% block table_header %}
+{% endblock table_header %}
 <table id="display_table" class="table table-striped">
 
 	<thead>
@@ -45,6 +47,9 @@
 	</tbody>
 
 </table>
+{% block table_footer %}
+{% endblock table_footer %}
+
 {% block content %}
 {% endblock content %}
 </div>
@@ -57,13 +62,11 @@ $(document).ready(function() {
     	console.log('hover', $(this));
     });
 });
-</script>
-
-<script language="javascript" type="text/javascript">
-$(""
-); </script>
-
-<script language="javascript" type="text/javascript">
+$(document).ready(function() {
+	$(".unClickable").click(function(event) {
+          event.stopPropagation();
+      });
+});
 $(document).ready(function() {
       $(".clickableRow").on("click", function() {
           location.href=$(this).data('url');
