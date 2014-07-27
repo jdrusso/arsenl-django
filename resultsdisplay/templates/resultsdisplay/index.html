@@ -10,7 +10,8 @@
 
     {% block table_toprow %}
     	<th> Project Name </th>
-    	<th> Latest runtime (seconds) </th>
+    	<th> Last run </th>
+    	<th> Runtime (seconds) </th>
     	<th> PASS </th>
     	<th> FAIL </th>
     	<th> ERROR </th>
@@ -21,6 +22,7 @@
     {% for project in project_list %}
         <tr class="clickableRow" data-url="{% url 'resultsdisplay:TestRun' project.project_id %}">
 	        <td> {{ project.name }} </td>
+	        <td> {{ project.lastRun }} </td>
 	        <td> {{project.total_time}} </td>
 	        <td> {{project.passed}} </td>
 	        <td> {{project.failed}} </td>

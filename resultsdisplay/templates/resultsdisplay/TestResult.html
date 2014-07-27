@@ -15,26 +15,29 @@
 
 {% block content %}
 {% if testresult %}
-<p><strong>Name:</strong> {{ testresult.name }}</p>
-<p><strong>Run Number: </strong> {{ordered_run_num}} </p>
-<p><strong>Jenkins Run: </strong> {{testresult.run_num}}</p>
+<table>
+<tr><td><strong><font color="#317EAC">Name:</font></strong> &nbsp;&nbsp;</td><td>{{ testresult.name }}</td></tr>
+<tr><td><strong><font color="#317EAC">Run Number: </font></strong> &nbsp;&nbsp;</td><td>{{ordered_run_num}} </td></tr>
+<tr><td><strong><font color="#317EAC">Jenkins Run: </font></strong> &nbsp;&nbsp;</td><td>{{testresult.run_num}}</td></tr>
 
-<p><strong>Status:</strong> 
-{%if testresult.result == "PASS"%}
-<font color="green">{{ testresult.result }}</font>
-{%elif testresult.result == "ERROR"%}
-<font color="#b6b600">{{ testresult.result }}</font>
-{%else%}
-<font color="red">{{ testresult.result }}</font>
-{% endif %}
-</p>
+<tr><td><strong><font color="#317EAC">Status:</font></strong></td><td>
 
-<p><strong>Runtime:</strong> {{ testresult.run_time }}</p>
-<p><strong>Datestamp:</strong> {{ testresult.datestamp }}</p>
-<p><strong>SHA List: </strong> {{testresult.sha_list}}</p>
+	{%if testresult.result == "PASS"%}
+		<font color="green">
+	{%elif testresult.result == "ERROR"%}
+		<font color="#b6b600">
+	{%else%}
+		<font color="red">
+	{% endif %}
 
+	{{ testresult.result }}</font>
+</td></tr>
 
-<p><strong>Raw XML Output:</strong> <a href="{{ xml_url }}">{{xml_url}}</a></p>
+<tr><td><strong><font color="#317EAC">Runtime:</font></strong> &nbsp;&nbsp;</td><td>{{ testresult.run_time }}</td></tr>
+<tr><td><strong><font color="#317EAC">Datestamp:</font></strong> &nbsp;&nbsp;</td><td>{{ testresult.datestamp }}</td></tr>
+<tr><td><strong><font color="#317EAC">SHA List: </font></strong> &nbsp;&nbsp;</td><td>{{testresult.sha_list}}</td></tr>
+<tr><td><strong><font color="#317EAC">Raw XML Output:</font></strong>&nbsp;&nbsp;</td><td><a href="{{ xml_url }}">{{xml_url}}</a></td></tr>
+</table>
 
 <div class="panel-group" id="accordion">
 	<div class="panel panel-default">

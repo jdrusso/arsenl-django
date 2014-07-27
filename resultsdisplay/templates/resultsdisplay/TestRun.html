@@ -11,7 +11,6 @@
 	{% block table_header %}
     	<form name="run_select" action="." method="POST">
     	{% csrf_token %}
-    	{{thename}} : {{POST}}, {{Checkboxes}}
 	{% endblock table_header %}
 
 	{% block table_toprow %}
@@ -24,6 +23,7 @@
     	<th> FAIL </th>
     	<th> ERROR </th>
     	<th> Total </th>
+    	<th> &nbsp; </th>
     {% endblock table_toprow %}
 
     {% block table_contents %}
@@ -31,7 +31,7 @@
 	    {% with ordered_run_num=testrun_list|length|subtract:forloop.counter|add:1 %}
 
 	        <tr class="clickableRow" data-url="{% url 'resultsdisplay:TestGroup' testrun.project_id testrun.run_num ordered_run_num %}">
-	        	<td class="unClickable"> <input type="checkbox" name="checkbox" id="checkbox[]" /> </td>
+	        	<td class="unClickable"> <input type="checkbox" name="checkbox" id="checkbox[]" value="{{testrun.run_num}}" /> </td>
 	        	<td> {{ordered_run_num}} </td>
 	        	<td> {{testrun.run_num }}</td>
 	        	<td> {{testrun.datestamp }} </td>
@@ -40,6 +40,7 @@
 	        	<td> {{testrun.failed}} </td>
 	        	<td> {{testrun.errored}} </td>
 	        	<td> {{testrun.total}} </td>
+	        	<td class="unClickable"> <a href="{% url 'resultsdisplay:PrinterFriendly' testrun.project_id testrun.run_num ordered_run_num%}">⎙</a></td>
 	        </tr>
 	    {% endwith %}
 
@@ -47,7 +48,7 @@
     {% endblock table_contents %}
 
     {% block table_footer %}
-	<input type="submit" value="Delete selected" />
+	<input type="submit" onclick="return confirm('Are you sure you want to delete these?')" value="Delete selected" />
     </form>
     {% endblock table_footer %}
 
