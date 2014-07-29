@@ -1,0 +1,55 @@
+{% load split %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+<div class="container">
+<h1>
+<img style="height:50px;display:inline" class="img-responsive" src="{{STATIC_URL}}arsenl.bmp"/> ARSENL
+</h1>
+
+<table>
+<tbody>
+<tr> <td> <h3><b>Project: &nbsp;</b></h3></td><td> <h3><font color="#555555">{{project_name}}</font> </h3></td></tr>
+<tr> <td> <b> <font color="#317EAC"> Jenkins Run ID: &nbsp; </font> </b></td><td>{{run_num}}</td></tr>
+<tr> <td> <b> <font color="#317EAC"> Run Number: &nbsp; </font> </b></td><td> {{ordered_run_num}}</td></tr>
+<tr> <td> <b> <font color="#317EAC"> Run on: &nbsp; </font> </b></td><td> {{testresult_list.0.datestamp}}</td></tr>
+<tr> <td> <b> <font color="#317EAC"> Time: &nbsp; </font> </b></td><td> {{total_time}} seconds</td></tr>
+<tr> <td> <b> <font color="#317EAC"> Tests Run: &nbsp; </font> </td><td> {{num_tests}}, Passed: {{num_passed}}, Failed: {{num_failed}}, Errored: {{num_errored}}</td></tr>
+<tr> <td> <b> <font color="#317EAC"> SHAs: &nbsp;</font></b></td><td>
+
+{% for sha in testresult_list.0.sha_list %}
+
+	<br>{{sha}}
+
+{% endfor %}</td></tr>
+
+</table>
+
+<table class="table table-striped" style="border-spacing:10px;">
+<thead>
+	<tr>
+	<td><b><font color="#317EAC">Name</font></b></td>
+	<td><b><font color="#317EAC">Result</font></b></td>
+	<td><b><font color="#317EAC">Time</font></b></td>
+	</tr>
+</thead>
+{% for test in testresult_list %}
+<tbody>
+	<tr>
+	<td>{{test.name}}</td>
+	<td>
+		{% if test.result == 'PASS' %}
+		<font color="green">
+		{% elif test.result == 'ERROR' %}
+		<font color="yellow">
+		{% else %}
+		<font color="red">
+		{% endif %}
+		&nbsp;&nbsp;{{test.result}} </font>
+	</td>
+	<td>&nbsp;&nbsp;{{test.run_time}} seconds</td>
+	</tr>
+</tbody>
+
+{% endfor %}
+<table>
+</table>
