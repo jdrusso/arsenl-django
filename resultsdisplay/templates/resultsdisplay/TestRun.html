@@ -40,7 +40,7 @@
 	        	<td> {{testrun.failed}} </td>
 	        	<td> {{testrun.errored}} </td>
 	        	<td> {{testrun.total}} </td>
-	        	<td class="unClickable"> <a href="{% url 'resultsdisplay:PrinterFriendly' testrun.project_id testrun.run_num ordered_run_num%}">⎙</a></td>
+	        	<td class="unClickable"> <a href="{% url 'resultsdisplay:PrinterFriendly' testrun.project_id testrun.run_num ordered_run_num%}"><span class="glyphicon glyphicon-print"></span></a></td>
 	        </tr>
 	    {% endwith %}
 
