@@ -255,13 +255,18 @@ class PrinterFriendlyView(LoginRequiredMixin, generic.ListView):
 
 		for run in context['testresult_list']:
 
+
 			run['name'] = TestCase.objects.filter(test_case_id__exact=run['test_case_id']).values()[0]['name'] 
+			
 			repo_string = Project.objects.filter(project_id__exact=run['project_id']).values()[0]['repo_list']
 			run['repo_list'] = re.findall(r"[\w'\-]+", repo_string)
 			run['sha_list'] = re.findall(r"[A-Za-z0-9]+", run['sha_list'])
 			run['sha_list'] = [x[:10] for x in run['sha_list']]
 
-			run['sha_list'] = ["%s: %s" % (run['repo_list'][x], run['sha_list'][x]) for x in range(len(run['sha_list']))]
+			try:
+				run['sha_list'] = ["%s: %s" % (run['repo_list'][x], run['sha_list'][x]) for x in range(len(run['sha_list']))]
+			except IndexError:
+				run['sha_list'] = ['SHAs not available for this run.']
 
 		return context
 
@@ -405,8 +410,12 @@ class TestResultView(LoginRequiredMixin, generic.DetailView):
 		context['testresult']['sha_list'] = re.findall(r"[A-Za-z0-9]+", context['testresult']['sha_list'])
 		context['testresult']['sha_list'] = [x[:10] for x in context['testresult']['sha_list']]
 
-		context['testresult']['sha_list'] = ["%s: %s" % (context['testresult']['repo_list'][x],
-			context['testresult']['sha_list'][x]) for x in range(len(context['testresult']['sha_list']))]
+		try:
+			context['testresult']['sha_list'] = ["%s: %s" % (context['testresult']['repo_list'][x],
+				context['testresult']['sha_list'][x]) for x in range(len(context['testresult']['sha_list']))]
+
+		except IndexError:
+			context['testresult']['sha_list'] = ['SHAs not available for this run.']
 
 		xml_url = getattr(settings, "STATIC_ROOT", None) + r'web/' + context['testresult']['xml_path']
 		context['xml_url'] = getattr(settings, "STATIC_URL", None) + r'web/' + context['testresult']['xml_path']

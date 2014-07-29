@@ -35,7 +35,13 @@
 
 <tr><td><strong><font color="#317EAC">Runtime:</font></strong> &nbsp;&nbsp;</td><td>{{ testresult.run_time }}</td></tr>
 <tr><td><strong><font color="#317EAC">Datestamp:</font></strong> &nbsp;&nbsp;</td><td>{{ testresult.datestamp }}</td></tr>
-<tr><td><strong><font color="#317EAC">SHA List: </font></strong> &nbsp;&nbsp;</td><td>{{testresult.sha_list}}</td></tr>
+<tr><td><strong><font color="#317EAC">SHA List: </font></strong> &nbsp;&nbsp;</td><td>
+	<table>
+	{% for sha in testresult.sha_list %}
+	<tr><td>{{sha}}</td></tr>
+	{% endfor %}
+	</table>
+</td></tr>
 <tr><td><strong><font color="#317EAC">Raw XML Output:</font></strong>&nbsp;&nbsp;</td><td><a href="{{ xml_url }}">{{xml_url}}</a></td></tr>
 </table>
 
@@ -44,7 +50,7 @@
 		<div class="panel-heading" data-toggle="collapse">
 			<h3 class="panel-title">
 			<a data-toggle="collapse" href="#collapseOne"><span class="glyphicon glyphicon-plus"></span>
-			Sys Output</a></h3>
+			<font color="#317EAC"><b>Sys Output</b></font></a></h3>
 		</div>
 
 		<div id="collapseOne" class="panel-collapse collapse">
@@ -58,7 +64,7 @@
 		<div class="panel-heading" data-toggle="collapse">
 			<h3 class="panel-title">
 			<a data-toggle="collapse" href="#collapseTwo"><span class="glyphicon glyphicon-plus"></span>
-			Mav Output</a></h3>
+			<font color="#317EAC"><b>Mav Output</b></font></a></h3>
 		</div>
 
 		<div id="collapseTwo" class="panel-collapse collapse">
@@ -72,7 +78,7 @@
 		<div class="panel-heading" data-toggle="collapse">
 			<h3 class="panel-title">
 			<a data-toggle="collapse" href="#collapseThree"><span class="glyphicon glyphicon-plus"></span>
-			JSBSim Output</a></h3>
+			<font color="#317EAC"><b>JSBSim Output</b></font></a></h3>
 		</div>
 
 		<div id="collapseThree" class="panel-collapse collapse">
