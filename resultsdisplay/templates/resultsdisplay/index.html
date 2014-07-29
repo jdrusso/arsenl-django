@@ -78,6 +78,24 @@
 	</div>
 {% endif %}
 </div>
+
+{%comment%}
+This is some sample code for adding a build trend graph
+<div class="center-block">
+<div class="panel panel-default">
+
+	<div class="panel-heading">
+		Build Trend
+	</div>
+
+	<div class="panel-body"><center>
+		<img src="https://jabba/ci/job/ACS/test/trend?width=600&height=400" />
+	</center></div>
+	
+</div>
+</div>
+{%endcomment%}
+
 </div>
 
 <script language="javascript" type="text/javascript">
@@ -107,7 +125,6 @@ $(document).ready(function(){
     })
   }, 500);});
 </script>
-
 {% endblock content %}
 
 </div>
