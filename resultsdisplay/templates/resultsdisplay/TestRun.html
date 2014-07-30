@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load subtraction %}
 
+{%block includes%}
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+{%endblock includes%}
+
 {% block breadcrumb %}
 <li><a href = "{% url 'resultsdisplay:index' %}"> {{ project_name }}</a></li>
 <li class="active">Test Runs</li>

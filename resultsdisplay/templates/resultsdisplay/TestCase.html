@@ -13,6 +13,7 @@
 {% if testcase_list %}
     
 	{% block table_toprow %}
+        <th> Datestamp </th>
     	<th> Test Name </th>
     	<th> Test Function </th>
     	<th> Result </th>
@@ -22,6 +23,7 @@
     {% block table_contents %}
     {% for testcase in testcase_list %}
     	<tr class="clickableRow" data-url="{% url 'resultsdisplay:Details' testcase.project_id testcase.run_num ordered_run_num group_id testcase.test_result_id %}">
+            <td> {{testcase.datestamp|date:"H"}}:{{testcase.datestamp|date:"i"}}:{{testcase.datestamp|date:"s"}}.{{testcase.datestamp|date:"u"|slice:"3"}} </td>
         	<td> {{testcase.name}} </td>
         	<td> {{testcase.test_function}} </td>
         	<td> 

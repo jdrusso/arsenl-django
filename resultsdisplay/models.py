@@ -37,7 +37,7 @@ class TestResult(models.Model):
     #Should this be an AutoField?
     test_result_id = models.IntegerField(primary_key=True)
 
-    datestamp = models.TextField()
+    datestamp = models.DateTimeField()
     run_num = models.IntegerField()
     run_time = models.TextField()
     result = models.TextField()
