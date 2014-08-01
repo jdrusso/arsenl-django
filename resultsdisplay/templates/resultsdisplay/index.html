@@ -21,16 +21,13 @@
     {% block table_contents %}
     {% for project in project_list %}
         <tr class="clickableRow" data-url="{% url 'resultsdisplay:TestRun' project.project_id %}">
-	        <td> {{ project.name }} </td>
+	        <td> {{ project.name }} <br><br> Total Test Runs in Database: {{project.total_runs}}  </td>
 	        <td> {{ project.lastRun }} </td>
 	        <td> {{project.total_time}} </td>
 	        <td> {{project.passed}} </td>
 	        <td> {{project.failed}} </td>
 	        <td> {{project.errored}} </td>
 	        <td> {{project.total}} </td>
-        </tr>
-        <tr class="disabled">
-	        <td> Total Test Runs in Database: {{project.total_runs}} </td>
         </tr>
     {% endfor %}
     {% endblock table_contents %}
