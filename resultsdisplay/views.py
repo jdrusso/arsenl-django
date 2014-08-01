@@ -68,7 +68,7 @@ class IndexView(LoginRequiredMixin, generic.ListView):
 
 		for aproject in context['project_list']:
 
-			aproject.mostRecentRun = TestResult.objects.aggregate(Max('run_num'))['run_num__max']
+			aproject.mostRecentRun = TestResult.objects.filter(project_id__exact=aproject.project_id).aggregate(Max('run_num'))['run_num__max']
 
 			aproject.lastRun = TestResult.objects.filter(
 				run_num__exact=aproject.mostRecentRun,
@@ -152,7 +152,7 @@ class TestRunView(LoginRequiredMixin, generic.ListView):
 	context_object_name = 'testrun_list'
 
 	def get_queryset(self):
-		return TestResult.objects.values().distinct('run_num')[::-1]
+		return TestResult.objects.filter(project_id__exact=int(self.kwargs['pk'])).values().distinct('run_num')[::-1]
 
 	def get_context_data(self, **kwargs):
 		context = super(TestRunView, self).get_context_data(**kwargs)
@@ -354,8 +354,9 @@ class TestCaseView(LoginRequiredMixin, generic.ListView):
 
 		valid_ids = [x for x in type_id if type_id[x] == this_type_name]
 
-		return TestResult.objects.extra(where=["run_num = %s", "test_case_id BETWEEN %s and %s"], 
-			params=[int(self.kwargs['run_num']),  min(valid_ids), max(valid_ids)])
+		#return TestResult.objects.extra(where=["run_num = %s"], test_case_id__in=valid_ids,
+		#	params=[int(self.kwargs['run_num'])])
+		return TestResult.objects.filter(test_case_id__in=valid_ids, run_num__exact=int(self.kwargs['run_num']))
 
 	def get_context_data(self, **kwargs):
 		context = super(TestCaseView, self).get_context_data(**kwargs)

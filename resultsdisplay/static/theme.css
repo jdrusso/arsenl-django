@@ -22,3 +22,7 @@ th.headerSortDown:before {
 th.headerSortUp:before {
 	content: '▼';
 }
+
+table.table-striped tbody tr.disabled:hover td{
+	background-color:white;
+}
