@@ -19,7 +19,7 @@
 
 	{% block table_toprow %}
 		<th> &nbsp; </th>
-    	<th> Run </th>
+    	<th id="runheader"> Run </th>
     	<th> Jenkins Run ID </th>
     	<th> Date </th>
     	<th> Time </th>
@@ -27,12 +27,13 @@
     	<th> FAIL </th>
     	<th> ERROR </th>
     	<th> Total </th>
+    	<th style="text-align:center;"> Changed </th>
     	<th> &nbsp; </th>
     {% endblock table_toprow %}
 
     {% block table_contents %}
-	    {% for testrun in testrun_list %}
-	    {% with ordered_run_num=testrun_list|length|subtract:forloop.counter|add:1 %}
+	    {% for testrun in testrun_list reversed %}
+	    {% with ordered_run_num=forloop.counter %}
 
 	        <tr class="clickableRow" data-url="{% url 'resultsdisplay:TestGroup' testrun.project_id testrun.run_num ordered_run_num %}">
 	        	<td class="unClickable"> <input type="checkbox" name="checkbox" id="checkbox[]" value="{{testrun.run_num}}" /> </td>
@@ -44,7 +45,8 @@
 	        	<td> {{testrun.failed}} </td>
 	        	<td> {{testrun.errored}} </td>
 	        	<td> {{testrun.total}} </td>
-	        	<td class="unClickable"> <a href="{% url 'resultsdisplay:PrinterFriendly' testrun.project_id testrun.run_num ordered_run_num%}"><span class="glyphicon glyphicon-print"></span></a></td>
+	        	<td style="text-align:center;color:blue;">  {% ifchanged testrun.sha_list %} <span class="glyphicon glyphicon-record" /> {% endifchanged %} </td>
+	        	<td class="unClickable"> <a href="{% url 'resultsdisplay:PrinterFriendly' testrun.project_id testrun.run_num ordered_run_num%}"><span class="glyphicon glyphicon-print" /></a></td>
 	        </tr>
 	    {% endwith %}
 
@@ -55,6 +57,15 @@
 	<input type="submit" onclick="return confirm('Are you sure you want to delete these?')" value="Delete selected" />
     </form>
     {% endblock table_footer %}
+
+{% block content %}
+<script language="javascript" type="text/javascript">
+window.onload = function(){
+	$("#runheader").trigger("click");
+	$("#runheader").trigger("click");
+};
+</script>
+{% endblock content %}
 
 {% else %}
     <p>No test runs are available.</p>
